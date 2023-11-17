@@ -13,6 +13,8 @@ function uniqueKey(socket) {
     return key;
 }
 
+module.exports.uniqueKey = uniqueKey;
+
 function parse(o) {
     if (typeof o === "string") {
         return o.split(",");
@@ -142,6 +144,9 @@ TcpProxy.prototype.handleClient = function(proxySocket) {
     });
     proxySocket.on("close", function(hadError) {
         delete self.proxySockets[uniqueKey(proxySocket)];
+        if ("onClientDisconnected" in self.options) {
+            self.options.onClientDisconnected(uniqueKey(proxySocket));
+        }
         if (context.serviceSocket !== undefined) {
             context.serviceSocket.destroy();
         }
