@@ -176,6 +176,12 @@ TcpProxy.prototype.handleUpstreamData = function(context, data) {
 TcpProxy.prototype.createServiceSocket = function(context) {
     var self = this;
     var options = self.parseServiceOptions(context);
+    if (options.host === undefined || options.port === undefined) {
+        if (context.proxySocket !== undefined) {
+            context.proxySocket.destroy();
+        }
+        return;
+    };
     if (self.options.tls === "both") {
         context.serviceSocket = tls.connect(options, function() {
             self.writeBuffer(context);
